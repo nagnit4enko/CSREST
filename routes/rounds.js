@@ -39,7 +39,7 @@ router.post('/', function(req, res) {
     });
 });
 
-/* GET */
+/* GET all */
 router.get('/', function(req, res) {
 
     var results = [];
@@ -68,6 +68,31 @@ router.get('/', function(req, res) {
 
     });
 
+});
+
+/* GET single */
+router.get('/:round_id', function(req, res){
+    var results = [];
+
+    var id = req.params.round_id;
+
+    pg.connect(connectionString, function(err, client, done) {
+
+        var query = client.query("SELECT * FROM items WHERE id=($1)", id);
+
+        query.on('row', function(row) {
+            results.push(row);
+        });
+
+        query.on('end', function() {
+            client.end();
+            return res.json(results);
+        });
+
+        if(err) {
+            console.log(err);
+        }
+    });
 });
 
 /* PUT */
