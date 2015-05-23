@@ -9,16 +9,23 @@ router.post('/', function(req, res) {
     var results = [];
 
     // Grab data from http request
-    var data = {text: req.body.text, complete: false};
+    var data = {complete: false,
+        total_item_value: req.body.total_item_value,
+        total_num_items: req.body.total_num_items,
+        item_witheld: req.body.item_witheld,
+        players: req.body.players
+    };
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
 
         // SQL Query > Insert Data
-        client.query("INSERT INTO items(text, complete) values($1, $2)", [data.text, data.complete]);
+        client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)",
+            [data.complete, data.total_item_value, data.total_num_items, data.item_witheld, data.players]
+        );
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM items ORDER BY id ASC");
+        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -48,7 +55,7 @@ router.get('/', function(req, res) {
     pg.connect(connectionString, function(err, client, done) {
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM items ORDER BY id ASC;");
+        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC;");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -71,14 +78,14 @@ router.get('/', function(req, res) {
 });
 
 /* GET single */
-router.get('/:round_id', function(req, res){
+router.get('/:game_id', function(req, res){
     var results = [];
 
-    var id = req.params.round_id;
+    var id = req.params.game_id;
 
     pg.connect(connectionString, function(err, client, done) {
 
-        var query = client.query("SELECT * FROM items WHERE id=($1)", id);
+        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", id);
 
         query.on('row', function(row) {
             results.push(row);
@@ -96,24 +103,24 @@ router.get('/:round_id', function(req, res){
 });
 
 /* PUT */
-router.put('/:round_id', function(req, res) {
+router.put('/:game_id', function(req, res) {
 
     var results = [];
 
     // Grab data from the URL parameters
-    var id = req.params.round_id;
+    var id = req.params.game_id;
 
     // Grab data from http request
-    var data = {text: req.body.text, complete: req.body.complete};
+    var data = {complete: req.body.complete, total_item_value: req.body.total_item_value, total_num_items: req.body.total_num_items, item_witheld: req.body.item_witheld, players: req.body.players};
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
 
         // SQL Query > Update Data
-        client.query("UPDATE items SET text=($1), complete=($2) WHERE id=($3)", [data.text, data.complete, id]);
+        client.query("UPDATE rounds SET complete=($1), total_item_value=($2), total_num_items=($3), item_witheld=($4), players=($5) WHERE game_id=($6)", [data.complete, data.total_item_value, data.total_num_items, data.item_witheld, data.players, id]);
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM items ORDER BY id ASC");
+        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", id);
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -136,22 +143,22 @@ router.put('/:round_id', function(req, res) {
 });
 
 /* DELETE */
-router.delete('/:round_id', function(req, res) {
+router.delete('/:game_id', function(req, res) {
 
     var results = [];
 
     // Grab data from the URL parameters
-    var id = req.params.round_id;
+    var id = req.params.game_id;
 
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
 
         // SQL Query > Delete Data
-        client.query("DELETE FROM items WHERE id=($1)", [id]);
+        client.query("DELETE FROM rounds WHERE game_id=($1)", [id]);
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM items ORDER BY id ASC");
+        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
