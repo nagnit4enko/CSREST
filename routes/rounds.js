@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
         );
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC");
+        var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -55,7 +55,7 @@ router.get('/', function(req, res) {
     pg.connect(connectionString, function(err, client, done) {
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC;");
+        var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -78,14 +78,14 @@ router.get('/', function(req, res) {
 });
 
 /* GET single */
-router.get('/:game_id', function(req, res){
+router.get('/:game_id', function(req, res) {
     var results = [];
 
     var id = req.params.game_id;
 
     pg.connect(connectionString, function(err, client, done) {
 
-        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", id);
+        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", [id]);
 
         query.on('row', function(row) {
             results.push(row);
@@ -127,7 +127,7 @@ router.put('/:game_id', function(req, res) {
         );
 
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", id);
+        var query = client.query("SELECT * FROM rounds WHERE game_id=($1)", [id]);
 
         // Stream results back one row at a time
         query.on('row', function(row) {
