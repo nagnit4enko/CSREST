@@ -8,6 +8,7 @@ router.post('/', function(req, res) {
     var results = [];
 
     var data = {steam_id: req.body.steam_id,
+        join_date: req.body.join_date,
         game_history: req.body.game_history
     };
 
