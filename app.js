@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var rounds = require('./routes/rounds');
 var users = require('./routes/users');
+var inventory = require('./routes/inventory');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use(cors());
 app.use('/', routes);
 app.use('/api/rounds', rounds);
 app.use('/api/users', users);
+app.use('/api/inventory', inventory);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
