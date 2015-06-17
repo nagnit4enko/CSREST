@@ -38,3 +38,7 @@ node_modules
 out
 gen
 
+npm-debug.log
+.DS_Store
+/*.env
+
