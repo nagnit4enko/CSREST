@@ -1,3 +1,5 @@
+require('dotenv').load(); //load environment variables from .env files
+
 var express = require('express');
 var cors =  require('cors');
 var path = require('path');
@@ -38,7 +40,7 @@ app.use('/api/inventory', inventory);
 var bot = new Steam.SteamClient();
 bot.logOn({
     accountName: process.env.STEAM_USERNAME,
-    password: process.end.STEAM_PASSWORD,
+    password: process.env.STEAM_PASSWORD,
     // authCode: process.env.STEAM_GUARD, //Use for initial login to generate sentryFile, steam guard code
     shaSentryfile: fs.readFileSync('sentryfile')
 });
