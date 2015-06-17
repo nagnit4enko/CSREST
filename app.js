@@ -5,6 +5,8 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var Steam = require('steam');
+var fs = require('fs');
 
 var routes = require('./routes/index');
 var rounds = require('./routes/rounds');
@@ -30,6 +32,43 @@ app.use('/', routes);
 app.use('/api/rounds', rounds);
 app.use('/api/users', users);
 app.use('/api/inventory', inventory);
+
+
+/// Steam bot account log on
+var bot = new Steam.SteamClient();
+bot.logOn({
+    accountName: process.env.STEAM_USERNAME,
+    password: process.end.STEAM_PASSWORD,
+    // authCode: process.env.STEAM_GUARD, //Use for initial login to generate sentryFile, steam guard code
+    shaSentryfile: fs.readFileSync('sentryfile')
+});
+bot.on('loggedOn', function() {
+    console.log('logged in');
+    bot.setPersonaState(Steam.EPersonaState.Online);
+});
+bot.on('sentry',function(sentryHash) {
+    require('fs').writeFile('sentryfile',sentryHash,function(err) {
+        if(err){
+            console.log(err);
+        } else {
+            console.log('Saved sentry file hash as "sentryfile"');
+        }
+    });
+});
+
+bot.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
+    console.log('Got an invite to ' + chatRoomName + ' from ' + bot.users[patronID].playerName);
+    bot.joinChat(chatRoomID); // autojoin on invite
+});
+
+bot.on('message', function(source, message, type, chatter) {
+    // respond to both chat room and private messages
+    console.log('Received message: ' + message);
+    if (message == 'trade') {
+        bot.sendMessage(source, 'attempting to intiate trade', Steam.EChatEntryType.ChatMsg); // ChatMsg by default
+        bot.trade(source);
+    }
+});
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
