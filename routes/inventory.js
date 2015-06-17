@@ -26,7 +26,7 @@ router.get('/:steam_id', function(req, res) {
             body += chunk;
         });
         response.on('end', function() {
-            var results = JSON.parse(body)
+            var results = JSON.parse(body);
             return res.json(results);
         });
         response.on('error', function(err) {
