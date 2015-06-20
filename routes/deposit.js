@@ -58,29 +58,34 @@ bot.on('webSessionID', function(sessionID) {
     offers.setup( {
       sessionID: sessionID,
       webCookie: newCookie
+    }, function(err) {
+      if(err) {
+        throw err;
+      }
     });
   });
 });
 
 /* POST user deposits items */
-router.post('/:steam_id', function(req, res) {
+router.post('/', function(req, res) {
 
-  var id = req.params.steam_id;
-  var items = req.body.items;
+  var id = '76561198065546545';
+  // var token = req.body.token;
+  // var items = req.body.items;
 
   offers.makeOffer({
-    partnerSteamID: id,
-    itemsFromMe: [],
-    itemsFromThem: items,
+    partnerSteamId: id,
+    itemsFromMe: {"appid": 730,     "contextid": 2,     "amount": 1,     "assetid": "1704316634" },
+    itemsFromThem: [],
     message: 'test trade offer'
   }, function(err, response) {
     if(err) {
       throw err;
     }
     console.log(response);
-    res.send(response);
+    return res.json(response);
   });
-})
+});
 
 
 
