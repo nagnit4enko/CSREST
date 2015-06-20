@@ -41,12 +41,20 @@ app.use('/api/inventory', inventory);
 var bot = new Steam.SteamClient();
 var offers = new SteamTradeOffers();
 
-bot.logOn({
+var logOnOptions = {
   accountName: process.env.STEAM_USERNAME,
   password: process.env.STEAM_PASSWORD,
-  // authCode: process.env.STEAM_GUARD, //Use for initial login to generate sentryFile, steam guard code
-  shaSentryfile: fs.readFileSync('sentryfile')
-});
+};
+
+var authCode = ''
+
+if (require('fs').existsSync('sentryfile')) {
+  logOnOptions['shaSentryfile'] = require('fs').readFileSync('sentryfile');
+} else if (authCode != '') {
+  logOnOptions['authCode'] = authCode;
+}
+
+bot.logOn(logOnOptions);
 
 bot.on('loggedOn', function() {
   console.log('logged in');
