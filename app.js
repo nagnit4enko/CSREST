@@ -1,4 +1,4 @@
-require('dotenv').load(); //load environment variables from .env files
+// require('dotenv').load(); //load environment variables from .env files
 
 var express = require('express');
 var cors =  require('cors');
