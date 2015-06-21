@@ -66,16 +66,44 @@ bot.on('webSessionID', function(sessionID) {
   });
 });
 
-/* POST user deposits items */
-router.post('/', function(req, res) {
+bot.on('tradeOffers', function(number) {
+  if(number > 0) {
+    offers.getOffers({
+      get_received_offers: 1,
+      active_only:1,
+      time_historical_cutoff: Math.round(Date.now() / 1000)
+    }, function(error, body) {
+      if(body.response.trade_offers_received) {
+        body.response.trade_offers_received.forEach(function(offer) {
+          if(offer.trade_offer_state == 2) {
+            console.log(offer);
+            console.log('Received trade offer: ' + offer.tradeofferid);
+            if(!offer.items_to_give) {
+              offers.acceptOffer({tradeOfferId: offer.tradeofferid});
+              console.log('Offer Accepted');
+              bot.sendMessage(offer.steamid_other, 'Thanks for the deposit');
+            }
+            else {
+              offers.declineOffer({tradeOfferId: offer.tradeofferid});
+              console.log('Offer declined');
+              bot.sendMessage(offer.steamid_other, 'Gifts only');
+            }
+          }
+        });
+      }
+    });
+  }
+});
 
-  var id = '76561198065546545';
-  // var token = req.body.token;
-  // var items = req.body.items;
+/* POST user deposits items */
+router.post('/:steam_id', function(req, res) {
+
+  var id = req.params.steam_id;
+  var items = req.body.items;
 
   offers.makeOffer({
     partnerSteamId: id,
-    itemsFromMe: {"appid": 730,     "contextid": 2,     "amount": 1,     "assetid": "1704316634" },
+    itemsFromMe: items,
     itemsFromThem: [],
     message: 'test trade offer'
   }, function(err, response) {
