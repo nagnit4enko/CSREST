@@ -14,7 +14,6 @@ router.get('/:steam_id', function(req, res) {
     }, function(error, response, body) {
       res.send(body);
     })
-
 });
 
 module.exports = router;
