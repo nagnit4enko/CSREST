@@ -16,7 +16,7 @@ var logOnOptions = {
   password: process.env.STEAM_PASSWORD,
 };
 
-var authCode = ''
+var authCode = '';
 
 if (require('fs').existsSync('sentryfile')) {
   logOnOptions['shaSentryfile'] = require('fs').readFileSync('sentryfile');
