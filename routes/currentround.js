@@ -4,10 +4,17 @@ var pg = require('pg');
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 var schema = require('../models/schema');
 
-console.log(schema.roundSchema);
 
 
 
+
+function NextRound() {
+  var newRound = schema.roundSchema;
+
+  pg.connect(connectionString, function(err, client, done) {
+    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)", [newRound.complete, newRound.total_item_value, newRound.total_num_items, newRound.item_witheld, newRound.players]);
+  });
+}
 
 router.get('/', function(req, res) {
   var results = [];
