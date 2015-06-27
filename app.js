@@ -14,6 +14,7 @@ var rounds = require('./routes/rounds');
 var users = require('./routes/users');
 var inventory = require('./routes/inventory');
 var deposit = require('./routes/deposit');
+var currentround = require('./routes/currentround');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/rounds', rounds);
 app.use('/api/users', users);
 app.use('/api/inventory', inventory);
 app.use('/api/deposit', deposit);
+app.use('/api/currentround', currentround);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
