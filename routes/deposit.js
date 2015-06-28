@@ -3,9 +3,12 @@ require('dotenv').load(); //load environment variables from .env files
 
 var express = require('express');
 var router = express.Router();
+var pg = require('pg');
 var request = require('request');
 var Steam = require('steam');
 var SteamTradeOffers = require('steam-tradeoffers');
+
+var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
 /// Steam bot account log on
 var bot = new Steam.SteamClient();
@@ -85,7 +88,40 @@ bot.on('tradeOffers', function(number) {
                 offers.getItems({
                   tradeId: res.tradeid
                 }, function(error, items) {
-                  console.log(items);
+                  if(error) {
+                    console.log(error);
+                  }
+                  else {
+                    GetSteamUserInfo(offer.steamid_other, function(userData) {
+                      var playerItems = [];
+                      var personJson = JSON.parse(userData);
+                      player = personJson.response.players[0];
+                      for(i=0; i<items.length; i++) {
+                        item = items[i];
+                        GetItemPrice(item["market_hash_name"], function(itemData) {
+                          itemJson = JSON.parse(itemData);
+
+                          playerItem = {
+                            "appid": item["appid"],
+                            "contextid": item["contextid"],
+                            "classid": item["classid"],
+                            "instanceid": item["instanceid"],
+                            "icon_url": item["icon_url"],
+                            "name": item["name"],
+                            "market_hash_name": item["market_hash_name"],
+                            "median_price": itemJson["median_price"]
+                          }
+                          playerItems.push(playerItem);
+                          console.log(playerItems);
+                          console.log(player);
+                        });
+                      }
+
+                      // pg.connect(connectionString, function(err, client, done) {
+                      //   client.query("UPDATE rounds SET ")
+                      // })
+                    });
+                  }
                 });
               });
               console.log('Offer Accepted');
@@ -102,6 +138,44 @@ bot.on('tradeOffers', function(number) {
     });
   }
 });
+
+function GetSteamUserInfo(steamid) {
+  var uriString = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + 'apiKeyAsString' + '&steamids=' + steamid;
+
+  // begin GET http request
+  request({
+    uri: uriString
+  }, function(error, response, body) {
+    if(!error && response.statusCode == 200) {
+      callback(body);
+    }
+    else if(error) {
+      console.log(error);
+    }
+    else {
+      console.log(response.statusCode);
+    }
+  });
+}
+
+function GetItemPrice(marketHashName, callback) {
+  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + marketHashName;
+
+  // begin GET http request
+  request({
+    uri: connectionString
+  }, function(error, response, body) {
+    if(!error && response.statusCode == 200) {
+      callback(body);
+    }
+    else if(error) {
+      console.log(error);
+    }
+    else {
+      console.log(response.statusCode);
+    }
+  });
+}
 
 /* POST user deposits items */
 router.post('/:steam_id', function(req, res) {

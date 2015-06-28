@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
   var results = [];
 
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC LIMIT 1");
+    var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC LIMIT 1");
 
     query.on('row', function(row) {
       results.push(row);
