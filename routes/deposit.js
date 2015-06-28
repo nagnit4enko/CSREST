@@ -42,16 +42,16 @@ bot.on('sentry',function(sentryHash) {
   });
 });
 
-bot.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
-  console.log('Got an invite to ' + chatRoomName + ' from ' + bot.users[patronID].playerName);
-  bot.joinChat(chatRoomID); // autojoin on invite
-});
-
-bot.on('message', function(source, message, type, chatter) {
-  // respond to both chat room and private messages
-  console.log('Received message: ' + message);
-  bot.sendMessage(source, 'Autoresponse from Bot', Steam.EChatEntryType.ChatMsg); // ChatMsg by default
-});
+// bot.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
+//   console.log('Got an invite to ' + chatRoomName + ' from ' + bot.users[patronID].playerName);
+//   bot.joinChat(chatRoomID); // autojoin on invite
+// });
+//
+// bot.on('message', function(source, message, type, chatter) {
+//   // respond to both chat room and private messages
+//   console.log('Received message: ' + message);
+//   bot.sendMessage(source, 'Autoresponse from Bot', Steam.EChatEntryType.ChatMsg); // ChatMsg by default
+// });
 
 bot.on('webSessionID', function(sessionID) {
   bot.webLogOn(function(newCookie) {
