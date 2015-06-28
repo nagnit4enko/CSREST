@@ -79,7 +79,15 @@ bot.on('tradeOffers', function(number) {
             console.log(offer);
             console.log('Received trade offer: ' + offer.tradeofferid);
             if(!offer.items_to_give) {
-              offers.acceptOffer({tradeOfferId: offer.tradeofferid});
+              offers.acceptOffer({
+                tradeOfferId: offer.tradeofferid
+              }, function(error, res) {
+                offers.getItems({
+                  tradeId: res.tradeid
+                }, function(error, items) {
+                  console.log(items);
+                });
+              });
               console.log('Offer Accepted');
               bot.sendMessage(offer.steamid_other, 'Thanks for the deposit');
             }
