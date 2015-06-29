@@ -88,40 +88,34 @@ bot.on('tradeOffers', function(number) {
                 offers.getItems({
                   tradeId: res.tradeid
                 }, function(error, items) {
-                  if(error) {
-                    console.log(error);
-                  }
-                  else {
-                    GetSteamUserInfo(offer.steamid_other, function(userData) {
-                      var playerItems = [];
-                      var personJson = JSON.parse(userData);
-                      player = personJson.response.players[0];
-                      for(i=0; i<items.length; i++) {
-                        item = items[i];
-                        GetItemPrice(item["market_hash_name"], function(itemData) {
-                          itemJson = JSON.parse(itemData);
+                  // GetSteamUserInfo(offer.steamid_other, function(userData) {
+                  //   var playerJson = JSON.parse(userData);
+                  //   var player = personJson.response.players[0];
+                  //   console.log("Player: ");
+                  //   console.log(player);
 
-                          playerItem = {
-                            "appid": item["appid"],
-                            "contextid": item["contextid"],
-                            "classid": item["classid"],
-                            "instanceid": item["instanceid"],
-                            "icon_url": item["icon_url"],
-                            "name": item["name"],
-                            "market_hash_name": item["market_hash_name"],
-                            "median_price": itemJson["median_price"]
-                          }
-                          playerItems.push(playerItem);
-                          console.log(playerItems);
-                          console.log(player);
-                        });
-                      }
+                    var playerItems = [];
+                    for(var i = 0; i < items.length; i++) {
+                      var item = items[i];
+                      GetItemPrice(item["market_hash_name"], function(itemData) {
+                        itemJson = JSON.parse(itemData);
 
-                      // pg.connect(connectionString, function(err, client, done) {
-                      //   client.query("UPDATE rounds SET ")
-                      // })
-                    });
-                  }
+                        playerItem = {
+                          "appid": itemJson["appid"],
+                          "contextid": itemJson["contextid"],
+                          "classid": itemJson["classid"],
+                          "instanceid": itemJson["instanceid"],
+                          "icon_url": itemJson["icon_url"],
+                          "name": itemJson["name"],
+                          "market_hash_name": itemJson["market_hash_name"],
+                          "median_price": itemJson["median_price"]
+                        }
+                        playerItems.push(playerItem);
+                        console.log(playerItems);
+
+                      })
+                    }
+                  // });
                 });
               });
               console.log('Offer Accepted');
