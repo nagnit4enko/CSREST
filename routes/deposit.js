@@ -1,12 +1,15 @@
 require('dotenv').load(); //load environment variables from .env files
 
-
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var request = require('request');
 var Steam = require('steam');
 var SteamTradeOffers = require('steam-tradeoffers');
+var async = require('async');
+
+// some valve api calls used when trades complete
+var valveapi = require('../functions/valveapi');
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
@@ -88,34 +91,21 @@ bot.on('tradeOffers', function(number) {
                 offers.getItems({
                   tradeId: res.tradeid
                 }, function(error, items) {
-                  // GetSteamUserInfo(offer.steamid_other, function(userData) {
-                  //   var playerJson = JSON.parse(userData);
-                  //   var player = personJson.response.players[0];
-                  //   console.log("Player: ");
-                  //   console.log(player);
-
-                    var playerItems = [];
-                    for(var i = 0; i < items.length; i++) {
-                      var item = items[i];
-                      GetItemPrice(item["market_hash_name"], function(itemData) {
-                        itemJson = JSON.parse(itemData);
-
-                        playerItem = {
-                          "appid": itemJson["appid"],
-                          "contextid": itemJson["contextid"],
-                          "classid": itemJson["classid"],
-                          "instanceid": itemJson["instanceid"],
-                          "icon_url": itemJson["icon_url"],
-                          "name": itemJson["name"],
-                          "market_hash_name": itemJson["market_hash_name"],
-                          "median_price": itemJson["median_price"]
-                        }
-                        playerItems.push(playerItem);
-                        console.log(playerItems);
-
-                      })
+                  async.parallel([
+                    function(callback) {
+                      valveapi.GetSteamUserInfo(offer.steamid_other, function(error, userData) {
+                        callback(null, userData);
+                      });
+                    },
+                    function(callback) {
+                      valveapi.GetItemsPrice(items, function(itemsData) {
+                        callback(null, itemsData);
+                      });
                     }
-                  // });
+                  ],
+                  function(error, results) {
+                    console.log(results);
+                  });
                 });
               });
               console.log('Offer Accepted');
@@ -132,44 +122,6 @@ bot.on('tradeOffers', function(number) {
     });
   }
 });
-
-function GetSteamUserInfo(steamid) {
-  var uriString = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + 'apiKeyAsString' + '&steamids=' + steamid;
-
-  // begin GET http request
-  request({
-    uri: uriString
-  }, function(error, response, body) {
-    if(!error && response.statusCode == 200) {
-      callback(body);
-    }
-    else if(error) {
-      console.log(error);
-    }
-    else {
-      console.log(response.statusCode);
-    }
-  });
-}
-
-function GetItemPrice(marketHashName, callback) {
-  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + marketHashName;
-
-  // begin GET http request
-  request({
-    uri: connectionString
-  }, function(error, response, body) {
-    if(!error && response.statusCode == 200) {
-      callback(body);
-    }
-    else if(error) {
-      console.log(error);
-    }
-    else {
-      console.log(response.statusCode);
-    }
-  });
-}
 
 /* POST user deposits items */
 router.post('/:steam_id', function(req, res) {
