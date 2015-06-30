@@ -25,14 +25,26 @@ exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
 }
 
 function GetItemPrice(item, callback) {
-  var hashName = item["market_hash_name"];
-  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + hashName;
+  var itemJson = {
+    "appid": item["appid"],
+    "contextid": item["contextid"],
+    "classid": item["classid"],
+    "instanceid": item["instanceid"],
+    "icon_url": item["icon_url"],
+    "name": item["name"],
+    "market_hash_name": item["market_hash_name"],
+    "median_price": null
+  };
+
+  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + itemJson["market_hash_name"];
 
   request({
     uri: connectionString
   }, function(error, response, body) {
     if(!error && response.statusCode == 200) {
-      callback(null, body);
+      var bodyJson = JSON.parse(body);
+      itemJson["median_price"] = bodyJson["median_price"];
+      callback(null, itemJson);
     }
     else if(error) {
       callback(error);
