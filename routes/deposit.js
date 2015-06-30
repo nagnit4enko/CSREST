@@ -104,7 +104,26 @@ bot.on('tradeOffers', function(number) {
                     }
                   ],
                   function(error, results) {
-                    console.log(results);
+                    var results = [];
+                    pg.connect(connectionString, function(err, client, done) {
+                      client.query("UPDATE rounds SET players=players+($1) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [results]);
+
+                      var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC LIMIT 1");
+
+                      query.on('row', function() {
+                        results.push(row);
+                      });
+
+                      query.on('end', function() {
+                        client.end();
+                        console.log(results);
+                      });
+
+                      if(err) {
+                        console.log(err);
+                      }
+
+                    });
                   });
                 });
               });
