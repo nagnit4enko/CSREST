@@ -104,25 +104,40 @@ bot.on('tradeOffers', function(number) {
                     }
                   ],
                   function(error, results) {
-                    var results = [];
+                    var players = [];
                     pg.connect(connectionString, function(err, client, done) {
-                      client.query("UPDATE rounds SET players=players+($1) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [results]);
-
-                      var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC LIMIT 1");
-
-                      query.on('row', function() {
-                        results.push(row);
+                      var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
+                      query.on('row', function(row) {
+                       players.push(row.players);
                       });
-
                       query.on('end', function() {
-                        client.end();
-                        console.log(results);
+                        var updated = [];
+                        if(players[0] == null) {
+                          updated = [results];
+                        }
+                        else {
+                          updated = players.concat(results);
+                        }
+                        console.log(updated);
+                        var newPlayers = [];
+                        pg.connect(connectionString, function(err, client, done) {
+                          client.query("UPDATE rounds SET players=($1) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updated)]);
+                          var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
+                          query.on('row', function(row) {
+                            newPlayers.push(row);
+                          });
+                          query.on('end', function() {
+                            client.end();
+                            console.log(newPlayers);
+                          });
+                          if (err) {
+                            console.log(err);
+                          }
+                        });
                       });
-
-                      if(err) {
+                      if (err) {
                         console.log(err);
                       }
-
                     });
                   });
                 });

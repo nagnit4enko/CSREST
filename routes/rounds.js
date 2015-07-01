@@ -13,14 +13,13 @@ router.post('/', function(req, res) {
     complete: false,
     total_item_value: req.body.total_item_value,
     total_num_items: req.body.total_num_items,
-    players: req.body.players
   };
 
   // Get a Postgres client from the connection pool
   pg.connect(connectionString, function(err, client, done) {
 
     // SQL Query > Insert Data
-    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)", [data.complete, data.total_item_value, data.total_num_items, data.item_witheld, data.players]);
+    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)", [data.complete, data.total_item_value, data.total_num_items, data.item_witheld, null]);
 
     // SQL Query > Select Data
     var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC");
