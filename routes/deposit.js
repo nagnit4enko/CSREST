@@ -118,7 +118,7 @@ bot.on('tradeOffers', function(number) {
                           updated = [playerResults];
                         }
                         else {
-                          updated = players.concat(playerResults);
+                          updated = players[0].concat(playerResults);
                         }
                         console.log(updated);
                         var newPlayers = [];
