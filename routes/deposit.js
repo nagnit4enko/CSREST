@@ -104,6 +104,8 @@ bot.on('tradeOffers', function(number) {
                     }
                   ],
                   function(error, results) {
+                    var playerResults = results[0];
+                    playerResults.items = results[1];
                     var players = [];
                     pg.connect(connectionString, function(err, client, done) {
                       var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
@@ -112,11 +114,11 @@ bot.on('tradeOffers', function(number) {
                       });
                       query.on('end', function() {
                         var updated = [];
-                        if(players[0] == null) {
-                          updated = [results];
+                        if(players[0] === null) {
+                          updated = [playerResults];
                         }
                         else {
-                          updated = players.concat(results);
+                          updated = players.concat(playerResults);
                         }
                         console.log(updated);
                         var newPlayers = [];

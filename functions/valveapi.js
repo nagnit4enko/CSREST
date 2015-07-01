@@ -63,7 +63,7 @@ exports.GetItemsPrice = function GetItemsPrice(items, callback) {
       callback(results);
     }
   );
-}
+};
 
 // Example async parallel call
 // items = ['P90 | Ash Wood (Field-Tested)', 'P90 | Ash Wood (Field-Tested)'];
