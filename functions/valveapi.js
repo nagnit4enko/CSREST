@@ -47,7 +47,7 @@ function GetItemPrice(item, callback) {
   }, function(error, response, body) {
     if(!error && response.statusCode == 200) {
       var bodyJson = JSON.parse(body);
-      itemJson.median_price = bodyJson.median_price;
+      itemJson.median_price = bodyJson.median_price.replace("&#36;", "");
       callback(null, itemJson);
     }
     else if(error) {
