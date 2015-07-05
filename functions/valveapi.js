@@ -40,7 +40,7 @@ function GetItemPrice(item, callback) {
     "median_price": null
   };
 
-  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + itemJson.market_hash_name;
+  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + item.market_hash_name;
 
   request({
     uri: connectionString
