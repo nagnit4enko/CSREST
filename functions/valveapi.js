@@ -22,28 +22,32 @@ exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
       callback(response.statusCode);
     }
   });
-}
+};
 
 function GetItemPrice(item, callback) {
   var itemJson = {
-    "appid": item["appid"],
-    "contextid": item["contextid"],
-    "classid": item["classid"],
-    "instanceid": item["instanceid"],
-    "icon_url": item["icon_url"],
-    "name": item["name"],
-    "market_hash_name": item["market_hash_name"],
+    "id": item.id,
+    "appid": item.appid,
+    "contextid": item.contextid,
+    "classid": item.classid,
+    "instanceid": item.instanceid,
+    "icon_url": item.icon_url,
+    "icon_url_large": item.icon_url_large,
+    "name": item.name,
+    "market_hash_name": item.market_hash_name,
+    "market_name":item.market_name,
+    "name_color": item.name_color,
     "median_price": null
   };
 
-  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + itemJson["market_hash_name"];
+  var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + itemJson.market_hash_name;
 
   request({
     uri: connectionString
   }, function(error, response, body) {
     if(!error && response.statusCode == 200) {
       var bodyJson = JSON.parse(body);
-      itemJson["median_price"] = bodyJson["median_price"];
+      itemJson.median_price = bodyJson.median_price;
       callback(null, itemJson);
     }
     else if(error) {

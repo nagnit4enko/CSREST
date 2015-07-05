@@ -25,9 +25,9 @@ var logOnOptions = {
 var authCode = '';
 
 if (require('fs').existsSync('sentryfile')) {
-  logOnOptions['shaSentryfile'] = require('fs').readFileSync('sentryfile');
-} else if (authCode != '') {
-  logOnOptions['authCode'] = authCode;
+  logOnOptions.shaSentryfile = require('fs').readFileSync('sentryfile');
+} else if (authCode !== '') {
+  logOnOptions.authCode = authCode;
 }
 
 bot.logOn(logOnOptions);
@@ -104,8 +104,8 @@ bot.on('tradeOffers', function(number) {
                     }
                   ],
                   function(error, results) {
+                    results[0].items = results[1];
                     var playerResults = results[0];
-                    playerResults.items = results[1];
                     var players = [];
                     pg.connect(connectionString, function(err, client, done) {
                       var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
