@@ -19,7 +19,7 @@ router.post('/', function(req, res) {
   pg.connect(connectionString, function(err, client, done) {
 
     // SQL Query > Insert Data
-    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)", [data.complete, data.total_item_value, data.total_num_items, data.item_witheld, null]);
+    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, item_witheld, players) values($1, $2, $3, $4, $5)", [data.complete, 0.00, 0, data.item_witheld, null]);
 
     // SQL Query > Select Data
     var query = client.query("SELECT * FROM rounds ORDER BY game_id DESC");

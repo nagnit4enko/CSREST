@@ -91,6 +91,11 @@ bot.on('tradeOffers', function(number) {
                 offers.getItems({
                   tradeId: res.tradeid
                 }, function(error, items) {
+                  var total_item_value = 0.00;
+                  for(i = 0; i < items.length; i++) {
+                    var itemPrice = items[i].median_price;
+                    total_item_value += itemPrice;
+                  }
                   async.parallel([
                     function(callback) {
                       valveapi.GetSteamUserInfo(offer.steamid_other, function(error, userData) {
@@ -105,6 +110,7 @@ bot.on('tradeOffers', function(number) {
                   ],
                   function(error, results) {
                     results[0].items = results[1];
+                    results[0].total_item_value = total_item_value;
                     var playerResults = results[0];
                     var players = [];
                     pg.connect(connectionString, function(err, client, done) {
@@ -123,7 +129,7 @@ bot.on('tradeOffers', function(number) {
                         console.log(updated);
                         var newPlayers = [];
                         pg.connect(connectionString, function(err, client, done) {
-                          client.query("UPDATE rounds SET players=($1) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updated)]);
+                          client.query("UPDATE rounds SET players=($1), total_item_value=total_item_value+($2), total_num_items=total_num_items+($3) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updated), playerResults.total_item_value, playerResults.items.length]);
                           var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
                           query.on('row', function(row) {
                             newPlayers.push(row);
