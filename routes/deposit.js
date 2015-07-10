@@ -91,11 +91,6 @@ bot.on('tradeOffers', function(number) {
                 offers.getItems({
                   tradeId: res.tradeid
                 }, function(error, items) {
-                  var total_item_value = 0.00;
-                  for(i = 0; i < items.length; i++) {
-                    var itemPrice = items[i].median_price;
-                    total_item_value += itemPrice;
-                  }
                   async.parallel([
                     function(callback) {
                       valveapi.GetSteamUserInfo(offer.steamid_other, function(error, userData) {
@@ -109,8 +104,14 @@ bot.on('tradeOffers', function(number) {
                     }
                   ],
                   function(error, results) {
-                    results[0].items = results[1];
+                    var itemsData = results[1];
+                    var total_item_value = 0.00;
+                    for(i = 0; i < itemsData.length; i++) {
+                      var itemPrice = itemsData[i].median_price;
+                      total_item_value += itemPrice;
+                    }
                     results[0].total_item_value = total_item_value;
+                    results[0].items = results[1];
                     var playerResults = results[0];
                     var players = [];
                     pg.connect(connectionString, function(err, client, done) {
