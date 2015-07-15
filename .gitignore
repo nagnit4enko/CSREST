@@ -43,4 +43,4 @@ npm-debug.log
 /*.env
 
 # steam bot login hash
-sentryfile
+# sentryfile
