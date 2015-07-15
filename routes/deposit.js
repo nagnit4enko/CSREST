@@ -1,5 +1,3 @@
-require('dotenv').load(); //load environment variables from .env files
-
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
