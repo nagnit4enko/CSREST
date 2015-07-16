@@ -66,21 +66,3 @@ exports.GetItemsPrice = function GetItemsPrice(items, callback) {
     }
   );
 };
-
-// Example async parallel call
-// items = ['P90 | Ash Wood (Field-Tested)', 'P90 | Ash Wood (Field-Tested)'];
-// async.parallel([
-//   function(callback) {
-//     GetItemsPrice(items, function(itemsData) {
-//       callback(null, itemsData);
-//     });
-//   },
-//   function(callback) {
-//     GetSteamUserInfo('76561198077592773', function(error, userData) {
-//       callback(null, userData);
-//     });
-//   }
-// ],
-// function(error, results) {
-//   console.log(results);
-// });
