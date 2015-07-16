@@ -1,13 +1,15 @@
 language: node_js
 node_js:
-  - "0.12"
-  - "0.11"
-  - "0.10"
-  - "iojs"
-services:
-  postgresql
+- '0.12'
+- '0.11'
+- '0.10'
+- iojs
+services: postgresql
 addons:
-  postgresql: "9.3"
+  postgresql: '9.3'
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
-  - node ./models/database.js
+- psql -c 'create database travis_ci_test;' -U postgres
+- node ./models/database.js
+notifications:
+  slack:
+    secure: BR1wQPFBajz/N9rGe/jeVUSIl4GCHcdPEXXEBBbYziQlAtCyhCd19G7ZfjZebZdz5a3Gxr5ukJf0IJxHbklCyoMfELNAVek8M9M2nhXHkeHCb9VWvHWHOEqjD1FFTYw37CX3bKnZzeuvIEGRv9s3Cu+LwL8pXcpaHXcnhO90tOAPhsCU4wOCZ2NV3FOs8dTy2JhbNx8YKaNpyFOiNPqOWhz424XXQqk7oJiySvMnxgi4/rNwCvQfJmje2BHteL4DFaL7WUQH4cg6j+ot++3cfeK8Qo/7so8zDkBrHtaLkKrYi6380hemNJL+F1CWSTTQWOqNlj/+HrFg9RWjnZLNeAIocjqG4eO6AE2YI8iFl6ospX7cnULtr+L2LpsDX7ggpEt+d+bgk+cu2wBvu/SGTyLdlE0cC+br0KyI/n3MUH6+1eXZixLyTyjV1IBWWO1QWi91F5w8zmFDgeyUuRGeS0Qqk/rK0sxIEYKVb3J4Xo8S3JpmDMbtz76nTqlQofKCOzxJkNdw97tKLl6UYvyarX5ZlFikcjBs4aZG0F/56tRfzlb0SS13eTt5shdRQ1lgpDU5vOU9Nmb3evNG9eQj2CqIiM0TjpSMncNMC4i1QtVH3Yzc4dqVPfCva0SavGc57eDFApDM7w80Yq6THYMGt93pb6dXAmcn+B2aLbcSg+Y=
