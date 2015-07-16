@@ -11,6 +11,7 @@ router.post('/', function(req, res) {
         client.query("INSERT INTO users(steam_id, join_date, game_history) values($1, $2, $3)", [id, new Date().toDateString(), []], function(error, result) {
           if(error) {
             res.send(400);
+            return error;
           }
         });
         var query = client.query("SELECT * FROM users WHERE steam_id=($1)", [id]);
