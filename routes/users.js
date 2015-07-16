@@ -7,22 +7,22 @@ var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:po
 router.post('/', function(req, res) {
     var results = [];
 
+    var id = req.body.steam_id;
+
     pg.connect(connectionString, function(err, client, done) {
-        client.query("INSERT INTO users(steam_id, join_date, game_history) values($1, $2, $3)",
-            [req.body.steam_id, new Date().toDateString(), []]
-        );
-
-        var query = client.query("SELECT * FROM users ORDER BY join_date ASC");
-
+        client.query("INSERT INTO users(steam_id, join_date, game_history) values($1, $2, $3)", [id, new Date().toDateString(), []], function(error, result) {
+          if(error) {
+            res.send(400);
+          }
+        });
+        var query = client.query("SELECT * FROM users WHERE steam_id=($1)", [id]);
         query.on('row', function(row) {
             results.push(row);
         });
-
         query.on('end', function() {
             client.end();
             return res.json(results);
         });
-
         if(err) {
             console.log(err);
         }

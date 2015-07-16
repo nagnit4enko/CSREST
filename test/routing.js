@@ -109,33 +109,93 @@ describe('Routing', function() {
   });
 
   describe('Users', function() {
-    it('should return all users JSON', function(done) {
-      request(app)
-        .get('/api/users')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .end(function(error, res) {
-          if(error) {
-            throw error;
-          }
-          res.body.should.be.instanceof(Array);
-          done();
-        });
+    describe('Users POST', function() {
+      it('should create a new user', function(done) {
+        request(app)
+          .post('/api/users')
+          .send(testData.testUser)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(error, res) {
+            if(error) {
+              throw error;
+            }
+            res.body.should.be.instanceof(Array);
+            res.body[0].steam_id.should.equal(testData.testUser.steam_id);
+            res.body[0].join_date.should.be.instanceof(String);
+            res.body[0].should.have.property('game_history');
+            done();
+          });
+      });
+
+      it('should reject new user with duplicate steam_id' , function(done) {
+        request(app)
+          .post('/api/users')
+          .send(testData.testUser)
+          .expect(400, done);
+      });
     });
 
-    it('should return single user JSON', function(done) {
-      request(app)
-        .get('/api/users/')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .end(function(error, res) {
-          if(error) {
-            throw error;
-          }
-          done();
-        });
+    describe('Users GET', function() {
+      it('should return all users JSON', function(done) {
+        request(app)
+          .get('/api/users')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(error, res) {
+            if(error) {
+              throw error;
+            }
+            res.body.should.be.instanceof(Array);
+            done();
+          });
+      });
+    });
+
+    describe('Users GET single', function() {
+      it('should return single user JSON', function(done) {
+        request(app)
+          .get('/api/users/'+testData.testUser.steam_id)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(error, res) {
+            if(error) {
+              throw error;
+            }
+            res.body.should.be.instanceof(Array);
+            res.body[0].steam_id.should.equal(testData.testUser.steam_id);
+            res.body[0].join_date.should.be.instanceof(String);
+            res.body[0].should.have.property('game_history');
+            done();
+          });
+      });
+    });
+
+    describe('Users DELETE single', function() {
+      it('should delete single user', function(done) {
+        request(app)
+          .delete('/api/users/'+testData.testUser.steam_id)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(error, res) {
+            if(error) {
+              throw error;
+            }
+            var exists = false;
+            for(var i = 0; i < res.body.length; i++) {
+              if(res.body[i].steam_id == testData.testUser.steam_id) {
+                exists = true;
+                break;
+              }
+            }
+            exists.should.equal(false);
+            done();
+          });
+      });
     });
   });
 
