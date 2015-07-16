@@ -12,7 +12,7 @@ function NextRound() {
   var newRound = schema.roundSchema;
 
   pg.connect(connectionString, function(err, client, done) {
-    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, players) values($1, $2, $3, $4)", [newRound.complete, newRound.total_item_value, newRound.total_num_items, newRound.players]);
+    client.query("INSERT INTO rounds(complete, total_item_value, total_num_items, players) values($1, $2, $3, $4)", [false, 0.00, 0, null]);
   });
 }
 
