@@ -12,7 +12,14 @@ describe('Routing', function() {
         .get('/api/rounds')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(200, done);
+        .expect(200)
+        .end(function(error, res) {
+          if(error) {
+            throw error;
+          }
+          res.body.should.be.instanceof(Array);
+          done();
+        });
     });
 
     it('should return single round JSON', function(done) {
@@ -30,6 +37,37 @@ describe('Routing', function() {
           res.body[0].players.should.be.instanceof(Array);
           res.body[0].total_item_value.should.be.instanceof(String);
           res.body[0].total_num_items.should.be.instanceof(Number);
+          done();
+        });
+    });
+  });
+
+  describe('Users', function() {
+    it('should return all users JSON', function(done) {
+      request(app)
+        .get('/api/users')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(function(error, res) {
+          if(error) {
+            throw error;
+          }
+          res.body.should.be.instanceof(Array);
+          done();
+        });
+    });
+
+    it('should return single user JSON', function(done) {
+      request(app)
+        .get('/api/users/')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(function(error, res) {
+          if(error) {
+            throw error;
+          }
           done();
         });
     });
