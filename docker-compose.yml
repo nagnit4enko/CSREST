@@ -1,0 +1,16 @@
+web:
+  build: .
+  ports:
+   - "3000:3000"
+  volumes:
+   - .:/csrest
+  links:
+   - postgres
+  environment:
+    - DATABASE_URL=postgres://postgres@postgres:5432
+  env_file:
+    - ./.env
+postgres:
+  image: postgres
+  ports:
+    - "5432"
