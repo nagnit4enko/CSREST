@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha test",
-    "supervisor": "supervisor ./bin/www"
+    "supervisor": "supervisor ./bin/www",
+    "coverage": "istanbul cover node_modules/.bin/_mocha"
   },
   "dependencies": {
     "async": "^1.3.0",
@@ -30,6 +31,7 @@
     "assert": "^1.3.0",
     "mocha": "^2.2.5",
     "should": "^7.0.2",
+    "sinon": "^1.15.4",
     "supertest": "^1.0.1"
   }
 }

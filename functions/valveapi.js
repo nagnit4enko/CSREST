@@ -1,7 +1,6 @@
 var request = require('request');
 var async = require('async');
 
-
 exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
   var connectionString = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + process.env.STEAM_API_KEY + '&steamids=' + steamid;
 
@@ -22,7 +21,7 @@ exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
   });
 };
 
-function GetItemPrice(item, callback) {
+exports.GetItemPrice = function GetItemPrice(item, callback) {
   var itemJson = {
     "id": item.id,
     "appid": item.appid,
@@ -55,11 +54,11 @@ function GetItemPrice(item, callback) {
       callback(response.statusCode);
     }
   });
-}
+};
 
 exports.GetItemsPrice = function GetItemsPrice(items, callback) {
   async.map(items,
-    GetItemPrice,
+    this.GetItemPrice,
     function(err, results){
       // All tasks are done now
       callback(results);
