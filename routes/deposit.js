@@ -28,7 +28,7 @@ if (require('fs').existsSync('sentryfile')) {
   logOnOptions.authCode = authCode;
 }
 
-bot.logOn(logOnOptions);
+// bot.logOn(logOnOptions);
 
 bot.on('loggedOn', function() {
   console.log('logged in');
