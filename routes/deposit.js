@@ -7,68 +7,13 @@ var SteamTradeOffers = require('steam-tradeoffers');
 var async = require('async');
 
 // some valve api calls used when trades complete
-var valveapi = require('../functions/valveapi');
+var SteamWebApi = require('../modules/SteamWebApi');
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
-/// Steam bot account log on
-var bot = new Steam.SteamClient();
-var offers = new SteamTradeOffers();
-
-var logOnOptions = {
-  accountName: process.env.STEAM_USERNAME,
-  password: process.env.STEAM_PASSWORD,
-};
-
-var authCode = process.env.STEAM_AUTHCODE;
-
-if (require('fs').existsSync('sentryfile')) {
-  logOnOptions.shaSentryfile = require('fs').readFileSync('sentryfile');
-} else if (authCode !== '') {
-  logOnOptions.authCode = authCode;
-}
-
-// bot.logOn(logOnOptions);
-
-bot.on('loggedOn', function() {
-  console.log('logged in');
-  bot.setPersonaState(Steam.EPersonaState.Online);
-});
-
-bot.on('sentry',function(sentryHash) {
-  require('fs').writeFile('sentryfile',sentryHash,function(err) {
-    if(err){
-      console.log(err);
-    }
-    else {
-      console.log('Saved sentry file hash as "sentryfile"');
-    }
-  });
-});
-
-// bot.on('chatInvite', function(chatRoomID, chatRoomName, patronID) {
-//   console.log('Got an invite to ' + chatRoomName + ' from ' + bot.users[patronID].playerName);
-//   bot.joinChat(chatRoomID); // autojoin on invite
-// });
-//
-// bot.on('message', function(source, message, type, chatter) {
-//   // respond to both chat room and private messages
-//   console.log('Received message: ' + message);
-//   bot.sendMessage(source, 'Autoresponse from Bot', Steam.EChatEntryType.ChatMsg); // ChatMsg by default
-// });
-
-bot.on('webSessionID', function(sessionID) {
-  bot.webLogOn(function(newCookie) {
-    offers.setup( {
-      sessionID: sessionID,
-      webCookie: newCookie
-    }, function(err) {
-      if(err) {
-        throw err;
-      }
-    });
-  });
-});
+var SteamBot = require('../modules/SteamBot.js');
+var bot = SteamBot.bot;
+SteamBot.LogOn();
 
 bot.on('tradeOffers', function(number) {
   if(number > 0) {
@@ -91,12 +36,12 @@ bot.on('tradeOffers', function(number) {
                 }, function(error, items) {
                   async.parallel([
                     function(callback) {
-                      valveapi.GetSteamUserInfo(offer.steamid_other, function(error, userData) {
+                      SteamWebApi.GetSteamUserInfo(offer.steamid_other, function(error, userData) {
                         callback(null, userData);
                       });
                     },
                     function(callback) {
-                      valveapi.GetItemsPrice(items, function(itemsData) {
+                      SteamWebApi.GetItemsPrice(items, function(itemsData) {
                         callback(null, itemsData);
                       });
                     }

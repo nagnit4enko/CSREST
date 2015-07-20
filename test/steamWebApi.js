@@ -3,7 +3,7 @@ var assert =  require('assert');
 var request = require('supertest');
 var sinon = require('sinon');
 
-var valveapi = require('../functions/valveapi');
+var SteamWebApi = require('../modules/SteamWebApi');
 
 var testItems = require('./testdata.js').testItems;
 var testSteamID = require('./testdata.js').testSteamID;
@@ -13,7 +13,7 @@ describe('Valve API Interfacing', function() {
 
     describe('Get Item Price', function() {
       it('should get item price and return item JSON', function(done) {
-        valveapi.GetItemPrice(testItems[0], function(error, data) {
+        SteamWebApi.GetItemPrice(testItems[0], function(error, data) {
           data.id.should.be.instanceof(String);
           data.appid.should.be.instanceof(Number);
           data.contextid.should.be.instanceof(Number);
@@ -35,18 +35,18 @@ describe('Valve API Interfacing', function() {
     describe('Error', function() {
       before(function(done) {
         sinon
-          .stub(valveapi, 'GetItemPrice')
+          .stub(SteamWebApi, 'GetItemPrice')
           .yields('test error');
         done();
       });
 
       after(function(done) {
-        valveapi.GetItemPrice.restore();
+        SteamWebApi.GetItemPrice.restore();
         done();
       });
 
       it('should return error', function(done) {
-        valveapi.GetItemPrice(testItems[0], function(error, data) {
+        SteamWebApi.GetItemPrice(testItems[0], function(error, data) {
           (data === null).should.be.true;
           error.should.equal('test error');
           done();
@@ -56,7 +56,7 @@ describe('Valve API Interfacing', function() {
 
     describe('Get Items Price', function() {
       it('should get multiple items price and return as JSON array', function(done) {
-        valveapi.GetItemsPrice(testItems, function(data) {
+        SteamWebApi.GetItemsPrice(testItems, function(data) {
           data.should.be.instanceof(Array);
           data.length.should.equal(2);
           done();
@@ -69,7 +69,7 @@ describe('Valve API Interfacing', function() {
 
     describe('Successful GET', function() {
       it('should get steam user info as JSON', function(done) {
-        valveapi.GetSteamUserInfo(testSteamID, function(error, data) {
+        SteamWebApi.GetSteamUserInfo(testSteamID, function(error, data) {
           data.steamid.should.equal(testSteamID);
           (error === null).should.be.true;
           done();
@@ -80,18 +80,18 @@ describe('Valve API Interfacing', function() {
     describe('Error', function() {
       before(function(done) {
         sinon
-          .stub(valveapi, 'GetSteamUserInfo')
+          .stub(SteamWebApi, 'GetSteamUserInfo')
           .yields('test error');
         done();
       });
 
       after(function(done) {
-        valveapi.GetSteamUserInfo.restore();
+        SteamWebApi.GetSteamUserInfo.restore();
         done();
       });
 
       it('should return error', function(done) {
-        valveapi.GetSteamUserInfo(testSteamID, function(error, data) {
+        SteamWebApi.GetSteamUserInfo(testSteamID, function(error, data) {
           (data === null).should.be.true;
           error.should.equal('test error');
           done();
