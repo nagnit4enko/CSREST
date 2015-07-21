@@ -18,17 +18,17 @@ function AddDeposit(steamid, items) {
       });
     },
     function(depositJson, callback) {
-      GetPlayers(function(error, players) {
+      GetPlayers(function(error, players, total_item_value, items) {
         if(error){
           callback(error);
         }
         else{
-          callback(null, players);
+          callback(null, players, total_item_value, items);
         }
       });
     },
-    function(currentPlayers, callback) {
-      UpdatePlayers(currentPlayers, function(error, newPlayers) {
+    function(updatedPlayers, total_item_value, items, callback) {
+      UpdatePlayers(updatedPlayers, function(error, newPlayers) {
         if(error) {
           callback(error);
         }
@@ -55,7 +55,8 @@ function GetPlayers(playerResults, callback) {
       else {
         updated = players[0].concat(playerResults);
       }
-      callback(null, updated);
+      client.end();
+      callback(null, updated, playerResults.total_item_value, playerResults.items);
     });
 
     if(error) {
@@ -64,9 +65,9 @@ function GetPlayers(playerResults, callback) {
   });
 }
 
-function UpdatePlayers(currentPlayers, callback) {
+function UpdatePlayers(updatedPlayers, total_item_value, items, callback) {
   pg.connect(connectionString, function(error, client, done) {
-    client.query("UPDATE rounds SET players=($1), total_item_value=total_item_value+($2), total_num_items=total_num_items+($3) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(currentPlayers), playerResults.total_item_value, playerResults.items.length]);
+    client.query("UPDATE rounds SET players=($1), total_item_value=total_item_value+($2), total_num_items=total_num_items+($3) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updatedPlayers), total_item_value, items.length]);
     var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
     query.on('row', function(row) {
       newPlayers.push(row);
@@ -80,3 +81,7 @@ function UpdatePlayers(currentPlayers, callback) {
     }
   });
 }
+
+exports.AddDeposit = AddDeposit;
+exports.GetPlayers = GetPlayers;
+exports.UpdatePlayers = UpdatePlayers;

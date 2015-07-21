@@ -60,25 +60,4 @@ router.get('/:game_id', function(req, res) {
   });
 });
 
-
-/* DELETE */
-router.delete('/:game_id', function(req, res) {
-  var results = [];
-  var id = req.params.game_id;
-  pg.connect(connectionString, function(err, client, done) {
-    client.query("DELETE FROM rounds WHERE game_id=($1)", [id]);
-    var query = client.query("SELECT * FROM rounds ORDER BY game_id ASC");
-    query.on('row', function(row) {
-      results.push(row);
-    });
-    query.on('end', function() {
-      client.end();
-      return res.json(results);
-    });
-    if (err) {
-      console.log(err);
-    }
-  });
-});
-
 module.exports = router;
