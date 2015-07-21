@@ -1,10 +1,8 @@
-var exports = module.exports;
-
-exports.testUser = {
+var testUser = {
   steam_id: 'test_steam_id'
 };
 
-exports.testItems = [
+var testItems = [
   {
     "id":"2852817842",
     "appid":730,
@@ -35,4 +33,8 @@ exports.testItems = [
   }
 ];
 
-exports.testSteamID = '76561198077592773';
+var testSteamID = '76561198077592773';
+
+exports.testUser = testUser;
+exports.testItems = testItems;
+exports.testSteamID = testSteamID;

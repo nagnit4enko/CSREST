@@ -1,7 +1,7 @@
 var request = require('request');
 var async = require('async');
 
-exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
+function GetSteamUserInfo(steamid, callback) {
   var connectionString = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + process.env.STEAM_API_KEY + '&steamids=' + steamid;
 
   request({
@@ -19,9 +19,9 @@ exports.GetSteamUserInfo = function GetSteamUserInfo(steamid, callback) {
       callback(response.statusCode);
     }
   });
-};
+}
 
-exports.GetItemPrice = function GetItemPrice(item, callback) {
+function GetItemPrice(item, callback) {
   var itemJson = {
     "id": item.id,
     "appid": item.appid,
@@ -54,14 +54,50 @@ exports.GetItemPrice = function GetItemPrice(item, callback) {
       callback(response.statusCode);
     }
   });
-};
+}
 
-exports.GetItemsPrice = function GetItemsPrice(items, callback) {
+function GetItemsPrice(items, callback) {
   async.map(items,
-    this.GetItemPrice,
+    GetItemPrice,
     function(err, results){
       // All tasks are done now
       callback(results);
     }
   );
-};
+}
+
+function GetDepositInfo(steamid, items, mainCallback) {
+  async.parallel([
+    function(callback) {
+      GetSteamUserInfo(steamid, function(error, userData) {
+        callback(null, userData);
+      });
+    },
+    function(callback) {
+      GetItemsPrice(items, function(itemsData) {
+        callback(null, itemsData);
+      });
+    }
+  ], function(error, results) {
+    if(!error) {
+      var itemsData = results[1];
+      var total_item_value = 0.00;
+      for(i = 0; i < itemsData.length; i++) {
+        var itemPrice = itemsData[i].median_price;
+        total_item_value += itemPrice;
+      }
+      results[0].total_item_value = total_item_value;
+      results[0].items = results[1];
+      var playerResults = results[0];
+      mainCallback(null, playerResults);
+    }
+    else {
+      mainCallback(error);
+    }
+  });
+}
+
+exports.GetSteamUserInfo = GetSteamUserInfo;
+exports.GetItemPrice = GetItemPrice;
+exports.GetItemsPrice = GetItemsPrice;
+exports.GetDepositInfo = GetDepositInfo;
