@@ -5,7 +5,7 @@ var SteamWebApi = require('./SteamWebApi.js');
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
-function AddDeposit(steamid, items) {
+function AddDeposit(steamid, items, callback) {
   async.waterfall([
     function(callback) {
       SteamWebApi.GetDepositInfo(steamid, items, function(error, depositJson) {
@@ -18,16 +18,16 @@ function AddDeposit(steamid, items) {
       });
     },
     function(depositJson, callback) {
-      GetPlayers(function(error, players, total_item_value, items) {
+      GetPlayers(depositJson, function(error, players) {
         if(error){
           callback(error);
         }
         else{
-          callback(null, players, total_item_value, items);
+          callback(null, players);
         }
       });
     },
-    function(updatedPlayers, total_item_value, items, callback) {
+    function(updatedPlayers, callback) {
       UpdatePlayers(updatedPlayers, function(error, newPlayers) {
         if(error) {
           callback(error);
@@ -37,7 +37,9 @@ function AddDeposit(steamid, items) {
         }
       });
     }
-  ]);
+  ], function(error, results) {
+    callback(results);
+  });
 }
 
 function GetPlayers(playerResults, callback) {
@@ -51,12 +53,13 @@ function GetPlayers(playerResults, callback) {
       var updated = [];
       if(players[0] === null) {
         updated = [playerResults];
+        callback(null, updated);
       }
       else {
         updated = players[0].concat(playerResults);
+        callback(null, updated);
       }
       client.end();
-      callback(null, updated, playerResults.total_item_value, playerResults.items);
     });
 
     if(error) {
@@ -65,9 +68,10 @@ function GetPlayers(playerResults, callback) {
   });
 }
 
-function UpdatePlayers(updatedPlayers, total_item_value, items, callback) {
+function UpdatePlayers(updatedPlayers, callback) {
   pg.connect(connectionString, function(error, client, done) {
-    client.query("UPDATE rounds SET players=($1), total_item_value=total_item_value+($2), total_num_items=total_num_items+($3) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updatedPlayers), total_item_value, items.length]);
+    var newPlayers = [];
+    client.query("UPDATE rounds SET players=($1), total_item_value=total_item_value+($2), total_num_items=total_num_items+($3) WHERE game_id=(SELECT MAX(game_id) FROM rounds)", [JSON.stringify(updatedPlayers), updatedPlayers[updatedPlayers.length-1].total_item_value, updatedPlayers[updatedPlayers.length-1].items.length]);
     var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
     query.on('row', function(row) {
       newPlayers.push(row);
