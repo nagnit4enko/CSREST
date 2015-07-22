@@ -46,23 +46,22 @@ describe('Add Deposit Waterfall', function() {
 
   describe('Waterfall Data Callbacks From Valve API to DB Save', function() {
     it('should add deposit to current round in DB from testSteamID and testItems', function(done) {
-      UpdateRound.AddDeposit(testSteamID, testItems, function(data) {
-        var newPlayers = [];
-        pg.connect(connectionString, function(error, client, dbdone) {
-          var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
-          query.on('row', function(row) {
-            newPlayers.push(row.players);
-          });
-          query.on('end', function() {
-            client.end();
-            data[0].players[0].steamid.should.equal(newPlayers[0][0].steamid);
-            data[0].players[0].items.length.should.equal(newPlayers[0][0].items.length);
-            done();
-          });
-          if(error) {
-            console.log(error);
-          }
+      UpdateRound.AddDeposit(testSteamID, testItems);
+      var newPlayers = [];
+      pg.connect(connectionString, function(error, client, dbdone) {
+        var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
+        query.on('row', function(row) {
+          newPlayers.push(row.players);
         });
+        query.on('end', function() {
+          client.end();
+          data[0].players[0].steamid.should.equal(newPlayers[0][0].steamid);
+          data[0].players[0].items.length.should.equal(newPlayers[0][0].items.length);
+          done();
+        });
+        if(error) {
+          console.log(error);
+        }
       });
     });
   });

@@ -1,35 +1,36 @@
 var Steam = require('steam');
+var SteamWebLogOn = require('steam-weblogon');
 var SteamTradeOffers = require('steam-tradeoffers');
+var crypto = require('crypto');
+var fs = require('fs');
 var async = require('async');
 var UpdateRound = require('./UpdateRound.js');
 
-var bot = new Steam.SteamClient();
+var steamClient = new Steam.SteamClient();
+var bot = new Steam.SteamUser(steamClient);
 var offers = new SteamTradeOffers();
+
+var steamWebLogOn = new SteamWebLogOn(steamClient, bot);
 
 function LogOn() {
   var logOnOptions = {
-    accountName: process.env.STEAM_USERNAME,
+    account_name: process.env.STEAM_USERNAME,
     password: process.env.STEAM_PASSWORD,
   };
+
   var authCode = process.env.STEAM_AUTHCODE || '';
 
-  if (require('fs').existsSync('sentryfile')) {
-    logOnOptions.shaSentryfile = require('fs').readFileSync('sentryfile');
-  } else if (authCode !== '') {
-    logOnOptions.authCode = authCode;
+  try {
+    logOnOptions.sha_sentryfile = getSHA1(fs.readFileSync('sentryfile'));
+  } catch (e) {
+    if (authCode !== '') {
+      logOnOptions.auth_code = authCode;
+    }
   }
 
-  bot.logOn(logOnOptions);
-
-  bot.on('sentry',function(sentryHash) {
-    require('fs').writeFile('sentryfile',sentryHash,function(err) {
-      if(err){
-        console.log(err);
-      }
-      else {
-        console.log('Saved sentry file hash as "sentryfile"');
-      }
-    });
+  steamClient.connect();
+  steamClient.on('connected', function() {
+    bot.logOn(logOnOptions);
   });
 }
 
@@ -80,22 +81,22 @@ function DeclineOffer(offer) {
   bot.sendMessage(offer.steamid_other, 'Gifts Only');
 }
 
-bot.on('loggedOn', function() {
-  console.log('logged in');
-  bot.setPersonaState(Steam.EPersonaState.Online);
+steamClient.on('logOnResponse', function(res) {
+  if (res.eresult == Steam.EResult.OK) {
+    console.log('Steam User Logged On');
+    steamWebLogOn.webLogOn(function(sessionID, newCookie) {
+      offers.setup({
+        sessionID: sessionID,
+        webCookie: newCookie,
+        APIKey: process.env.STEAM_API_KEY
+      });
+    });
+  }
 });
 
-bot.on('webSessionID', function(sessionID) {
-  bot.webLogOn(function(newCookie) {
-    offers.setup( {
-      sessionID: sessionID,
-      webCookie: newCookie
-    }, function(err) {
-      if(err) {
-        throw err;
-      }
-    });
-  });
+bot.on('updateMachineAuth', function(sentry, callback) {
+  fs.writeFileSync('sentryfile', sentry.bytes);
+  callback({ sha_file: getSHA1(sentry.bytes) });
 });
 
 bot.on('tradeOffers', function(number) {
@@ -104,6 +105,13 @@ bot.on('tradeOffers', function(number) {
   }
 });
 
+function getSHA1(bytes) {
+  var shasum = crypto.createHash('sha1');
+  shasum.end(bytes);
+  return shasum.read();
+}
+
+exports.steamClient = steamClient;
 exports.bot = bot;
 exports.offers = offers;
 exports.LogOn = LogOn;
