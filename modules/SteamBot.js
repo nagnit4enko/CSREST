@@ -66,7 +66,14 @@ function AcceptOffer(offer) {
           tradeId: res.tradeid
         }, function(error, items) {
             if(!error) {
-              UpdateRound.AddDeposit(offer.steamid_other, items);
+              UpdateRound.AddDeposit(offer.steamid_other, items, function(err, response) {
+                if(!err) {
+                  console.log('Deposit Added To Current Round');
+                }
+                else {
+                  console.log(error);
+                }
+              });
             }
             else {
               console.log(error);

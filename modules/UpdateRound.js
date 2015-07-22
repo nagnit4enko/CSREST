@@ -5,7 +5,7 @@ var SteamWebApi = require('./SteamWebApi.js');
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
-function AddDeposit(steamid, items) {
+function AddDeposit(steamid, items, callback) {
   async.waterfall([
     function(callback) {
       SteamWebApi.GetDepositInfo(steamid, items, function(error, depositJson) {
@@ -37,7 +37,14 @@ function AddDeposit(steamid, items) {
         }
       });
     }
-  ]);
+  ], function(error, results) {
+    if(!error) {
+      callback(null, results);
+    }
+    else {
+      callback(error);
+    }
+  });
 }
 
 function GetPlayers(playerResults, callback) {

@@ -46,22 +46,44 @@ describe('Add Deposit Waterfall', function() {
 
   describe('Waterfall Data Callbacks From Valve API to DB Save', function() {
     it('should add deposit to current round in DB from testSteamID and testItems', function(done) {
-      UpdateRound.AddDeposit(testSteamID, testItems);
       var newPlayers = [];
-      pg.connect(connectionString, function(error, client, dbdone) {
-        var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
-        query.on('row', function(row) {
-          newPlayers.push(row.players);
+      UpdateRound.AddDeposit(testSteamID, testItems, function(error, data) {
+        pg.connect(connectionString, function(error, client, dbdone) {
+          var query = client.query("SELECT players FROM rounds ORDER BY game_id DESC LIMIT 1");
+          query.on('row', function(row) {
+            newPlayers.push(row.players);
+          });
+          query.on('end', function() {
+            JSON.stringify(newPlayers[0][0]).should.equal(JSON.stringify(data[0].players[0]));
+            client.end();
+            done();
+          });
+          if(error) {
+            console.log(error);
+          }
         });
-        query.on('end', function() {
-          client.end();
-          data[0].players[0].steamid.should.equal(newPlayers[0][0].steamid);
-          data[0].players[0].items.length.should.equal(newPlayers[0][0].items.length);
-          done();
-        });
-        if(error) {
-          console.log(error);
-        }
+      });
+    });
+  });
+
+  describe('AddDeposit Error', function() {
+    before(function(done) {
+      sinon
+        .stub(UpdateRound, 'AddDeposit')
+        .yields('test error');
+      done();
+    });
+
+    after(function(done) {
+      UpdateRound.AddDeposit.restore();
+      done();
+    });
+
+    it('should return error', function(done) {
+      UpdateRound.AddDeposit(testSteamID, testItems, function(error, data) {
+        (data === null).should.be.true;
+        error.should.equal('test error');
+        done();
       });
     });
   });

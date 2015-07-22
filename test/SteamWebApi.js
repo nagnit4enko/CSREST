@@ -65,7 +65,6 @@ describe('Valve API Interfacing', function() {
   });
 
   describe('Steam User Info', function() {
-
     describe('Successful GET', function() {
       it('should get steam user info as JSON', function(done) {
         SteamWebApi.GetSteamUserInfo(testSteamID, function(error, data) {
@@ -100,7 +99,6 @@ describe('Valve API Interfacing', function() {
   });
 
   describe('Deposit Info', function() {
-
     describe('Get Deposit JSON', function() {
       it('should return player json object with array of items deposited', function(done) {
         SteamWebApi.GetDepositInfo(testSteamID, testItems, function(error, data) {
