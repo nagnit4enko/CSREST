@@ -82,8 +82,8 @@ function UpdatePlayers(updatedPlayers, callback) {
       newPlayers.push(row);
     });
     query.on('end', function() {
-      client.end();
       callback(null, newPlayers);
+      client.end();
     });
     if (error) {
       callback(error);
