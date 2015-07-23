@@ -1,14 +1,11 @@
-var should = require('should');
-var assert =  require('assert');
-var sinon = require('sinon');
-var request = require('supertest');
-var pg = require('pg');
-var app = require('../app');
-
-var UpdateRound = require('../modules/UpdateRound.js');
-
-var testSteamID = require('./testdata.js').testSteamID;
-var testItems = require('./testdata.js').testItems;
+import should from 'should';
+import sinon from 'sinon';
+import request from 'supertest';
+import assert from 'assert';
+import pg from 'pg';
+import app from '../app';
+import UpdateRound from '../modules/UpdateRound.js';
+import {testSteamID, testItems} from './testdata.js';
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
