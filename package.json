@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "test": "mocha --compilers js:babel/register",
     "supervisor": "supervisor ./bin/www",
-    "coverage": "istanbul cover node_modules/.bin/_mocha"
+    "coverage": "istanbul cover node_modules/.bin/_mocha -- --require babel/register && istanbul report"
   },
   "dependencies": {
     "async": "^1.3.0",
