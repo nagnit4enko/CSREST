@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "babel-node ./bin/www",
+    "start": "node ./bin/www",
     "test": "mocha --compilers js:babel/register",
     "supervisor": "supervisor ./bin/www",
     "coverage": "istanbul cover node_modules/.bin/_mocha"
