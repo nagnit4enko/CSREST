@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "mocha test",
+    "start": "babel-node ./bin/www",
+    "test": "mocha --compilers js:babel/register",
     "supervisor": "supervisor ./bin/www",
     "coverage": "istanbul cover node_modules/.bin/_mocha"
   },
   "dependencies": {
     "async": "^1.3.0",
+    "babel": "^5.8.3",
     "body-parser": "~1.0.0",
     "cookie-parser": "~1.0.1",
     "cors": "^2.6.0",

@@ -82,7 +82,7 @@ function GetDepositInfo(steamid, items, mainCallback) {
     if(!error) {
       var itemsData = results[1];
       var total_item_value = 0.00;
-      for(i = 0; i < itemsData.length; i++) {
+      for(var i = 0; i < itemsData.length; i++) {
         var itemPrice = itemsData[i].median_price;
         total_item_value += itemPrice;
       }
