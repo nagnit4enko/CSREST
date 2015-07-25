@@ -4,8 +4,9 @@ import request from 'supertest';
 import assert from 'assert';
 import pg from 'pg';
 import app from '../app';
+import SteamWebApi from '../modules/SteamWebApi.js';
 import UpdateRound from '../modules/UpdateRound.js';
-import {testSteamID, testItems} from './testdata.js';
+import {testSteamID, testItems, testDepositJson} from './testdata.js';
 
 var connectionString = process.env.DATABASE_URL || 'postgres://mitchellvaline:postgres@localhost:5432/csrest';
 
@@ -42,6 +43,18 @@ describe('Add Deposit Waterfall', function() {
   });
 
   describe('Waterfall Data Callbacks From Valve API to DB Save', function() {
+    before(function(done) {
+      sinon
+        .stub(SteamWebApi, 'GetDepositInfo')
+        .yields(null, testDepositJson);
+        done();
+    });
+
+    after(function(done) {
+      SteamWebApi.GetDepositInfo.restore();
+      done();
+    });
+
     it('should add deposit to current round in DB from testSteamID and testItems', function(done) {
       var newPlayers = [];
       UpdateRound.AddDeposit(testSteamID, testItems, function(error, data) {
