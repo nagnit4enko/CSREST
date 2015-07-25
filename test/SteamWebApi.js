@@ -106,7 +106,6 @@ describe('Valve API Interfacing', function() {
 
       it('should get steam user info as JSON', function(done) {
         SteamWebApi.GetSteamUserInfo(testSteamID, function(error, data) {
-          console.log(data);
           data.steamid.should.equal(testSteamID);
           (error === null).should.be.true;
           done();
