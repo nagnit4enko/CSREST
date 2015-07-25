@@ -4,13 +4,27 @@ var sinon = require('sinon');
 
 var SteamWebApi = require('../modules/SteamWebApi');
 
+var testUser = require('./testdata.js').testUser;
 var testItems = require('./testdata.js').testItems;
 var testSteamID = require('./testdata.js').testSteamID;
+var testDepositJson = require('./testdata.js').testDepositJson;
+
 
 describe('Valve API Interfacing', function() {
   describe('Item Info', function() {
-
     describe('Get Item Price', function() {
+      before(function(done) {
+        sinon
+          .stub(SteamWebApi, 'GetItemPrice')
+          .yields(null, testItems[0]);
+        done();
+      });
+
+      after(function(done) {
+        SteamWebApi.GetItemPrice.restore();
+        done();
+      });
+
       it('should get item price and return item JSON', function(done) {
         SteamWebApi.GetItemPrice(testItems[0], function(error, data) {
           data.id.should.be.instanceof(String);
@@ -54,6 +68,18 @@ describe('Valve API Interfacing', function() {
     });
 
     describe('Get Items Price', function() {
+      before(function(done) {
+        sinon
+          .stub(SteamWebApi, 'GetItemsPrice')
+          .yields(testItems);
+        done();
+      });
+
+      after(function(done) {
+        SteamWebApi.GetItemsPrice.restore();
+        done();
+      });
+
       it('should get multiple items price and return as JSON array', function(done) {
         SteamWebApi.GetItemsPrice(testItems, function(data) {
           data.should.be.instanceof(Array);
@@ -66,8 +92,21 @@ describe('Valve API Interfacing', function() {
 
   describe('Steam User Info', function() {
     describe('Successful GET', function() {
+      before(function(done) {
+        sinon
+          .stub(SteamWebApi, 'GetSteamUserInfo')
+          .yields(null, testUser);
+        done();
+      });
+
+      after(function(done) {
+        SteamWebApi.GetSteamUserInfo.restore();
+        done();
+      });
+
       it('should get steam user info as JSON', function(done) {
         SteamWebApi.GetSteamUserInfo(testSteamID, function(error, data) {
+          console.log(data);
           data.steamid.should.equal(testSteamID);
           (error === null).should.be.true;
           done();
@@ -100,6 +139,18 @@ describe('Valve API Interfacing', function() {
 
   describe('Deposit Info', function() {
     describe('Get Deposit JSON', function() {
+      before(function(done) {
+        sinon
+          .stub(SteamWebApi, 'GetDepositInfo')
+          .yields(null, testDepositJson);
+        done();
+      });
+
+      after(function(done) {
+        SteamWebApi.GetDepositInfo.restore();
+        done();
+      });
+
       it('should return player json object with array of items deposited', function(done) {
         SteamWebApi.GetDepositInfo(testSteamID, testItems, function(error, data) {
           data.steamid.should.be.instanceof(String).and.equal(testSteamID);

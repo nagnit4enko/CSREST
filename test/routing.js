@@ -113,7 +113,7 @@ describe('Routing', function() {
       it('should create a new user', function(done) {
         request(app)
           .post('/api/users')
-          .send(testData.testUser)
+          .send(testData.testPost)
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -122,7 +122,7 @@ describe('Routing', function() {
               throw error;
             }
             res.body.should.be.instanceof(Array);
-            res.body[0].steam_id.should.equal(testData.testUser.steam_id);
+            res.body[0].steam_id.should.equal(testData.testPost.steam_id);
             res.body[0].join_date.should.be.instanceof(String);
             res.body[0].should.have.property('game_history');
             done();
@@ -157,7 +157,7 @@ describe('Routing', function() {
     describe('Users GET single', function() {
       it('should return single user JSON', function(done) {
         request(app)
-          .get('/api/users/'+testData.testUser.steam_id)
+          .get('/api/users/'+testData.testSteamID)
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -166,7 +166,7 @@ describe('Routing', function() {
               throw error;
             }
             res.body.should.be.instanceof(Array);
-            res.body[0].steam_id.should.equal(testData.testUser.steam_id);
+            res.body[0].steam_id.should.equal(testData.testSteamID);
             res.body[0].join_date.should.be.instanceof(String);
             res.body[0].should.have.property('game_history');
             done();
@@ -177,7 +177,7 @@ describe('Routing', function() {
     describe('Users DELETE single', function() {
       it('should delete single user', function(done) {
         request(app)
-          .delete('/api/users/'+testData.testUser.steam_id)
+          .delete('/api/users/'+testData.testSteamID)
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -187,7 +187,7 @@ describe('Routing', function() {
             }
             var exists = false;
             for(var i = 0; i < res.body.length; i++) {
-              if(res.body[i].steam_id == testData.testUser.steam_id) {
+              if(res.body[i].steam_id == testData.testSteamID) {
                 exists = true;
                 break;
               }

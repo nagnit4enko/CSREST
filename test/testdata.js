@@ -1,5 +1,25 @@
 var testUser = {
-  steam_id: 'test_steam_id'
+  steamid: '76561198077592773',
+  communityvisibilitystate: 3,
+  profilestate: 1,
+  personaname: 'frown',
+  lastlogoff: 1437853578,
+  commentpermission: 1,
+  profileurl: 'http://steamcommunity.com/id/frown1/',
+  avatar: 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7.jpg',
+  avatarmedium: 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7_medium.jpg',
+  avatarfull: 'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7_full.jpg',
+  personastate: 0,
+  realname: 'mitchell valine',
+  primaryclanid: '103582791429521408',
+  timecreated: 1354689628,
+  personastateflags: 0,
+  loccountrycode: 'US',
+  locstatecode: 'CA'
+};
+
+var testPost = {
+  steam_id: '76561198077592773'
 };
 
 var testItems = [
@@ -86,6 +106,7 @@ var testDepositJson = {
    ]
 };
 
+exports.testPost = testPost;
 exports.testUser = testUser;
 exports.testItems = testItems;
 exports.testSteamID = testSteamID;
