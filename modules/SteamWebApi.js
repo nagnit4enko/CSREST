@@ -4,9 +4,7 @@ var async = require('async');
 function GetSteamUserInfo(steamid, callback) {
   var connectionString = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + process.env.STEAM_API_KEY + '&steamids=' + steamid;
 
-  request({
-    uri: connectionString
-  }, function(error, response, body) {
+  request.get(connectionString, function(error, response, body) {
     if(!error && response.statusCode == 200) {
       var playerJson = JSON.parse(body);
       var player = playerJson.response.players[0];
@@ -39,9 +37,7 @@ function GetItemPrice(item, callback) {
 
   var connectionString = 'https://steamcommunity.com/market/priceoverview/?currency=1&appid=730&market_hash_name=' + item.market_hash_name;
 
-  request({
-    uri: connectionString
-  }, function(error, response, body) {
+  request.get(connectionString, function(error, response, body) {
     if(!error && response.statusCode == 200) {
       var bodyJson = JSON.parse(body);
       itemJson.median_price = Number(bodyJson.median_price.replace("&#36;", ""));
@@ -70,7 +66,12 @@ function GetDepositInfo(steamid, items, mainCallback) {
   async.parallel([
     function(callback) {
       GetSteamUserInfo(steamid, function(error, userData) {
-        callback(null, userData);
+        if(!error){
+          callback(null, userData);
+        }
+        else {
+          callback(error);
+        }
       });
     },
     function(callback) {

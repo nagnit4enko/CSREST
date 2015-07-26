@@ -1,13 +1,16 @@
 var should = require('should');
+var request = require('request');
 var assert =  require('assert');
 var sinon = require('sinon');
 
-var SteamWebApi = require('../modules/SteamWebApi');
+var SteamWebApi = require('../modules/SteamWebApi.js');
 
 var testUser = require('./testdata.js').testUser;
 var testItems = require('./testdata.js').testItems;
 var testSteamID = require('./testdata.js').testSteamID;
 var testDepositJson = require('./testdata.js').testDepositJson;
+var testItemPrice = require('./testdata.js').testItemPrice;
+var testUserResponse = require('./testdata.js').testUserResponse;
 
 
 describe('Valve API Interfacing', function() {
@@ -15,13 +18,13 @@ describe('Valve API Interfacing', function() {
     describe('Get Item Price', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetItemPrice')
-          .yields(null, testItems[0]);
+          .stub(request, 'get')
+          .yields(null, {statusCode: 200}, testItemPrice);
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetItemPrice.restore();
+        request.get.restore();
         done();
       });
 
@@ -48,13 +51,13 @@ describe('Valve API Interfacing', function() {
     describe('Error', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetItemPrice')
-          .yields('test error');
+          .stub(request, 'get')
+          .yields('test error', null, null);
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetItemPrice.restore();
+        request.get.restore();
         done();
       });
 
@@ -70,13 +73,13 @@ describe('Valve API Interfacing', function() {
     describe('Get Items Price', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetItemsPrice')
-          .yields(testItems);
+          .stub(request, 'get')
+          .yields(null, {statusCode: 200}, testItemPrice);
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetItemsPrice.restore();
+        request.get.restore();
         done();
       });
 
@@ -94,13 +97,13 @@ describe('Valve API Interfacing', function() {
     describe('Successful GET', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetSteamUserInfo')
-          .yields(null, testUser);
+          .stub(request, 'get')
+          .yields(null, {statusCode: 200}, testUserResponse);
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetSteamUserInfo.restore();
+        request.get.restore();
         done();
       });
 
@@ -116,13 +119,13 @@ describe('Valve API Interfacing', function() {
     describe('Error', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetSteamUserInfo')
+          .stub(request, 'get')
           .yields('test error');
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetSteamUserInfo.restore();
+        request.get.restore();
         done();
       });
 
@@ -138,18 +141,6 @@ describe('Valve API Interfacing', function() {
 
   describe('Deposit Info', function() {
     describe('Get Deposit JSON', function() {
-      before(function(done) {
-        sinon
-          .stub(SteamWebApi, 'GetDepositInfo')
-          .yields(null, testDepositJson);
-        done();
-      });
-
-      after(function(done) {
-        SteamWebApi.GetDepositInfo.restore();
-        done();
-      });
-
       it('should return player json object with array of items deposited', function(done) {
         SteamWebApi.GetDepositInfo(testSteamID, testItems, function(error, data) {
           data.steamid.should.be.instanceof(String).and.equal(testSteamID);
@@ -191,20 +182,20 @@ describe('Valve API Interfacing', function() {
     describe('Error', function() {
       before(function(done) {
         sinon
-          .stub(SteamWebApi, 'GetDepositInfo')
+          .stub(request, 'get')
           .yields('test error');
         done();
       });
 
       after(function(done) {
-        SteamWebApi.GetDepositInfo.restore();
+        request.get.restore();
         done();
       });
 
       it('should return error', function(done) {
         SteamWebApi.GetDepositInfo(testSteamID, testItems, function(error, data) {
-          (data === null).should.be.true;
           error.should.equal('test error');
+          (data === undefined).should.be.true;
           done();
         });
       });

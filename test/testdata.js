@@ -106,6 +106,12 @@ var testDepositJson = {
    ]
 };
 
+var testUserResponse = '{"response": {"players": [{"steamid": "76561198077592773", "communityvisibilitystate": 3,"profilestate": 1,"personaname": "frown","lastlogoff": 1437866031,"commentpermission": 1,"profileurl": "http://steamcommunity.com/id/frown1/","avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7.jpg","avatarmedium": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7_medium.jpg","avatarfull": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/17/17d0b195ae535fbb47200a3b07aa182eb5c20db7_full.jpg","personastate": 0,"realname": "mitchell valine","primaryclanid": "103582791429521408","timecreated": 1354689628,"personastateflags": 0,"loccountrycode": "US","locstatecode": "CA"}]}}';
+
+var testItemPrice = '{"success":true,"lowest_price":"&#36;0.08","volume":"3,351","median_price":"&#36;0.07"}';
+
+exports.testUserResponse = testUserResponse;
+exports.testItemPrice = testItemPrice;
 exports.testPost = testPost;
 exports.testUser = testUser;
 exports.testItems = testItems;
